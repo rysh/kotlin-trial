@@ -1,10 +1,19 @@
 fun ShortestPath(strArr: Array<String>): String {
+
+    knownNodes.removeAll(knownNodes)
+    queue.removeAll(queue)
+
     val temp = createGraph(strArr)
     val startNode = temp.first
     val goal = temp.second
 
     queue.add(startNode)
-    return search(goal)!!.joinToString(separator = "-");
+    val ret = search(goal)
+    if (ret != null) {
+        return ret.joinToString(separator = "-")
+    } else {
+        return "-1"
+    }
 
 }
 
@@ -34,16 +43,17 @@ class Node(val name:String){
     val nodes = mutableListOf<Node>()
     fun add(n:Node) = nodes.add(n)
 
-    override fun toString():String = "${nodes.map { it.name }}"
+    override fun toString():String = "$name ${nodes.map { it.name }}"
+    fun hasGoal(goal: String) = nodes.find { it.name == goal } != null
 }
 
 val knownNodes = mutableSetOf<String>()
-var queue = mutableListOf<Node>()
+val queue = mutableListOf<Node>()
 fun search(goal: String): List<String>? {
     val curr:Node = queue.first()
     queue.removeAt(0)
 
-    if (hasGoal(curr, goal)) {
+    if (curr.hasGoal(goal)) {
         val route = curr.route
         route.add(curr.name)
         route.add(goal)
@@ -63,4 +73,3 @@ fun search(goal: String): List<String>? {
     return null
 }
 
-private fun hasGoal(curr: Node, goal: String) = curr.nodes.find { it.name == goal } != null
